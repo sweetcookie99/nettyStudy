@@ -28,15 +28,21 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DefaultThreadFactory implements ThreadFactory {
 
+    //没个DefaultThreadFactory实例  都有自己的poolId
     private static final AtomicInteger poolId = new AtomicInteger();
 
+    //每个DefaultThreadFactory实例  内部生成的线程都有自己的nextId
     private final AtomicInteger nextId = new AtomicInteger();
+
     private final String prefix;
     private final boolean daemon;
     private final int priority;
     protected final ThreadGroup threadGroup;
 
     public DefaultThreadFactory(Class<?> poolType) {
+        // 参数一：NioEventLoopGroup
+        //
+        //5
         this(poolType, false, Thread.NORM_PRIORITY);
     }
 

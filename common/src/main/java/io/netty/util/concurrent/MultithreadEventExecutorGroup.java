@@ -56,7 +56,13 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
      * @param executor          the Executor to use, or {@code null} if the default should be used.
      * @param args              arguments which will passed to each {@link #newChild(Executor, Object...)} call
      */
+    //线程数量
+    //执行器 null
+    //args[0] 选择器提供器，通过这个可以获取jdk层面的selector实例
+    //args[1] 选择器工作策略 DefaultSelectStrategyFactory
+    //args[2] 线程池拒绝策略
     protected MultithreadEventExecutorGroup(int nThreads, Executor executor, Object... args) {
+        //参数三 ChooserFactory 用来生成实例
         this(nThreads, executor, DefaultEventExecutorChooserFactory.INSTANCE, args);
     }
 
@@ -68,11 +74,19 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
      * @param chooserFactory    the {@link EventExecutorChooserFactory} to use.
      * @param args              arguments which will passed to each {@link #newChild(Executor, Object...)} call
      */
+    //线程数量
+    //执行器 null
+    // ChooserFactory
+    //args[0] 选择器提供器，通过这个可以获取jdk层面的selector实例
+    //args[1] 选择器工作策略 DefaultSelectStrategyFactory
+    //args[2] 线程池拒绝策略
     protected MultithreadEventExecutorGroup(int nThreads, Executor executor,
                                             EventExecutorChooserFactory chooserFactory, Object... args) {
         checkPositive(nThreads, "nThreads");
 
         if (executor == null) {
+            //真正生产出来执行任务的线程的实例   executor
+            //newDefaultThreadFactory() 构建一个线程工厂
             executor = new ThreadPerTaskExecutor(newDefaultThreadFactory());
         }
 
