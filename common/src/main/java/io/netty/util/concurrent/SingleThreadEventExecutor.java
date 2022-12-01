@@ -161,10 +161,16 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         taskQueue = newTaskQueue(this.maxPendingTasks);
         rejectedExecutionHandler = ObjectUtil.checkNotNull(rejectedHandler, "rejectedHandler");
     }
-
+    // NioEventLoopGroup
+    // ThreadPerTaskExecutor实例
+    //addTaskWakesUp 暂且不管
+    //newTaskQueue 最终返回一个Queue实例   最大长度 Integer最大值   正常使用 taskQueueFactory
+    //TAILtaskQueueFactory 大部分时间用不到
+    // rejectedExecutionHandler 拒绝策略
     protected SingleThreadEventExecutor(EventExecutorGroup parent, Executor executor,
                                         boolean addTaskWakesUp, Queue<Runnable> taskQueue,
                                         RejectedExecutionHandler rejectedHandler) {
+        // NioEventLoopGroup
         super(parent);
         this.addTaskWakesUp = addTaskWakesUp;
         this.maxPendingTasks = DEFAULT_MAX_PENDING_EXECUTOR_TASKS;

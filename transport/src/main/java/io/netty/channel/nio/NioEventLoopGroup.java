@@ -178,6 +178,11 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
         }
     }
 
+    // executor： ThreadPerTaskExecutor实例  找个实例里面包含一个 ThreadFactory实例  PerThreadExecutor通过内部工厂可以制造出来线程
+
+    //args[0] 选择器提供器，通过这个可以获取jdk层面的selector实例
+    //args[1] 选择器工作策略 DefaultSelectStrategyFactory
+    //args[2] 线程池拒绝策略
     @Override
     protected EventLoop newChild(Executor executor, Object... args) throws Exception {
         SelectorProvider selectorProvider = (SelectorProvider) args[0];
@@ -193,6 +198,12 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
         if (argsLength > 4) {
             tailTaskQueueFactory = (EventLoopTaskQueueFactory) args[4];
         }
+        //this 当前的NioEventLoopGroup
+        //executor: ThreadFactory实例
+        //选择器提供器，通过这个可以获取jdk层面的selector实例
+        //选择器工作策略
+        //线程池拒绝策略
+        //EventLoopTaskQueueFactory
         return new NioEventLoop(this, executor, selectorProvider,
                 selectStrategyFactory.newSelectStrategy(),
                 rejectedExecutionHandler, taskQueueFactory, tailTaskQueueFactory);

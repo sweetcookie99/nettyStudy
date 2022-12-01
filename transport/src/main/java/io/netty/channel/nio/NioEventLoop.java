@@ -139,10 +139,17 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     NioEventLoop(NioEventLoopGroup parent, Executor executor, SelectorProvider selectorProvider,
                  SelectStrategy strategy, RejectedExecutionHandler rejectedExecutionHandler,
                  EventLoopTaskQueueFactory taskQueueFactory, EventLoopTaskQueueFactory tailTaskQueueFactory) {
+        // NioEventLoopGroup
+        // ThreadPerTaskExecutor实例
+        //addTaskWakesUp 暂且不管
+        //newTaskQueue 最终返回一个Queue实例   最大长度 Integer最大值   正常使用 taskQueueFactory
+        //TAILtaskQueueFactory 大部分时间用不到
+        // rejectedExecutionHandler 拒绝策略
         super(parent, executor, false, newTaskQueue(taskQueueFactory), newTaskQueue(tailTaskQueueFactory),
                 rejectedExecutionHandler);
         this.provider = ObjectUtil.checkNotNull(selectorProvider, "selectorProvider");
         this.selectStrategy = ObjectUtil.checkNotNull(strategy, "selectStrategy");
+        //创建出来了selector实例 ,每个NioEventLoop 都持有一个 selector实例和一个ThreadPerTaskExecutor实例
         final SelectorTuple selectorTuple = openSelector();
         this.selector = selectorTuple.selector;
         this.unwrappedSelector = selectorTuple.unwrappedSelector;

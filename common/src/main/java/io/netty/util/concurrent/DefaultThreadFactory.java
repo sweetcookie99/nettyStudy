@@ -33,16 +33,17 @@ public class DefaultThreadFactory implements ThreadFactory {
 
     //每个DefaultThreadFactory实例  内部生成的线程都有自己的nextId
     private final AtomicInteger nextId = new AtomicInteger();
-
+    // 线程名称前缀
     private final String prefix;
     private final boolean daemon;
+    //线程优先级 默认5
     private final int priority;
     protected final ThreadGroup threadGroup;
 
     public DefaultThreadFactory(Class<?> poolType) {
         // 参数一：NioEventLoopGroup
-        //
-        //5
+        // 参数二：是否是守护线程
+        //  线程优先级 5
         this(poolType, false, Thread.NORM_PRIORITY);
     }
 
@@ -72,7 +73,7 @@ public class DefaultThreadFactory implements ThreadFactory {
 
     public static String toPoolName(Class<?> poolType) {
         ObjectUtil.checkNotNull(poolType, "poolType");
-
+        //获取一个不包含包名的 className
         String poolName = StringUtil.simpleClassName(poolType);
         switch (poolName.length()) {
             case 0:
@@ -81,6 +82,7 @@ public class DefaultThreadFactory implements ThreadFactory {
                 return poolName.toLowerCase(Locale.US);
             default:
                 if (Character.isUpperCase(poolName.charAt(0)) && Character.isLowerCase(poolName.charAt(1))) {
+                    //将classname 第一个字符转成小写并返回
                     return Character.toLowerCase(poolName.charAt(0)) + poolName.substring(1);
                 } else {
                     return poolName;
@@ -95,7 +97,7 @@ public class DefaultThreadFactory implements ThreadFactory {
             throw new IllegalArgumentException(
                     "priority: " + priority + " (expected: Thread.MIN_PRIORITY <= priority <= Thread.MAX_PRIORITY)");
         }
-
+        //前缀 + 分配ID号
         prefix = poolName + '-' + poolId.incrementAndGet() + '-';
         this.daemon = daemon;
         this.priority = priority;
@@ -108,6 +110,7 @@ public class DefaultThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable r) {
+        // 创建 一个有线程名 的线程
         Thread t = newThread(FastThreadLocalRunnable.wrap(r), prefix + nextId.incrementAndGet());
         try {
             if (t.isDaemon() != daemon) {
