@@ -132,13 +132,33 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         setChannelOptions(channel, newOptionsArray(), logger);
         setAttributes(channel, newAttributesArray());
 
+        // 拿到服务端的pipeline
         ChannelPipeline p = channel.pipeline();
 
+        // workerGroup
         final EventLoopGroup currentChildGroup = childGroup;
+        /**
+         * new ChannelInitializer<SocketChannel>() {
+         *                  @Override
+         *                  public void initChannel(SocketChannel ch) throws Exception {
+         *                      ChannelPipeline p = ch.pipeline();
+         *                      if (sslCtx != null) {
+         *                          p.addLast(sslCtx.newHandler(ch.alloc()));
+         *                      }
+         *                      //p.addLast(new LoggingHandler(LogLevel.INFO));
+         *                      p.addLast(serverHandler);
+         *                  }
+         *              }
+         */
+        // 这个
         final ChannelHandler currentChildHandler = childHandler;
-        final Entry<ChannelOption<?>, Object>[] currentChildOptions = newOptionsArray(childOptions);
-        final Entry<AttributeKey<?>, Object>[] currentChildAttrs = newAttributesArray(childAttrs);
 
+        //客户端 socket选项
+        final Entry<ChannelOption<?>, Object>[] currentChildOptions = newOptionsArray(childOptions);
+        // Netty的Channel都是实现了 AttributeMap 接口的 ， 可以在启动类里面 配置一些 自定义数据，这样创建出来的 channel实例，就会包含这些实列
+        final Entry<AttributeKey<?>, Object>[] currentChildAttrs = newAttributesArray(childAttrs);
+        // ChannelInitializer 本身不是一个 Handler ，只是通过适配器 实现了Handler接口
+        // 它的意义是 为了延迟初始化pipeline , 当 pipeline 上的 channel 激活以后，真正添加handler的逻辑才执行
         p.addLast(new ChannelInitializer<Channel>() {
             @Override
             public void initChannel(final Channel ch) {

@@ -93,6 +93,9 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
      * Create a new instance using the given {@link ServerSocketChannel}.
      */
     public NioServerSocketChannel(ServerSocketChannel channel) {
+        // null
+        // JDK 层面 ServerSocketChannel
+        // 因为是服务端  所以感兴趣的是Accept事件  当前服务端的 channel  最终会注册到 Selector [多路复用器]
         super(null, channel, SelectionKey.OP_ACCEPT);
         config = new NioServerSocketChannelConfig(this, javaChannel().socket());
     }
